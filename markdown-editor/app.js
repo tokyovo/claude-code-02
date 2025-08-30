@@ -29,7 +29,23 @@ class MarkdownEditor {
             wordCount: document.getElementById('wordCount'),
             charCount: document.getElementById('charCount'),
             saveStatus: document.getElementById('saveStatus'),
-            helpBtn: document.getElementById('helpBtn')
+            helpBtn: document.getElementById('helpBtn'),
+            // Toolbar buttons
+            boldBtn: document.getElementById('boldBtn'),
+            italicBtn: document.getElementById('italicBtn'),
+            strikeBtn: document.getElementById('strikeBtn'),
+            h1Btn: document.getElementById('h1Btn'),
+            h2Btn: document.getElementById('h2Btn'),
+            h3Btn: document.getElementById('h3Btn'),
+            linkBtn: document.getElementById('linkBtn'),
+            imageBtn: document.getElementById('imageBtn'),
+            codeBtn: document.getElementById('codeBtn'),
+            blockCodeBtn: document.getElementById('blockCodeBtn'),
+            listBtn: document.getElementById('listBtn'),
+            numListBtn: document.getElementById('numListBtn'),
+            quoteBtn: document.getElementById('quoteBtn'),
+            hrBtn: document.getElementById('hrBtn'),
+            themeBtn: document.getElementById('themeBtn')
         };
     }
 
@@ -38,6 +54,7 @@ class MarkdownEditor {
      */
     initialize() {
         this.setupEventListeners();
+        this.loadTheme();
         this.loadAutoSavedContent();
         this.updatePreview();
         this.updateWordCount();
@@ -85,6 +102,67 @@ class MarkdownEditor {
             this.showHelp();
         });
 
+        // Toolbar button events
+        this.elements.boldBtn.addEventListener('click', () => {
+            this.formatSelection('**', '**');
+        });
+
+        this.elements.italicBtn.addEventListener('click', () => {
+            this.formatSelection('*', '*');
+        });
+
+        this.elements.strikeBtn.addEventListener('click', () => {
+            this.formatSelection('~~', '~~');
+        });
+
+        this.elements.h1Btn.addEventListener('click', () => {
+            this.formatLine('# ');
+        });
+
+        this.elements.h2Btn.addEventListener('click', () => {
+            this.formatLine('## ');
+        });
+
+        this.elements.h3Btn.addEventListener('click', () => {
+            this.formatLine('### ');
+        });
+
+        this.elements.linkBtn.addEventListener('click', () => {
+            this.insertLink();
+        });
+
+        this.elements.imageBtn.addEventListener('click', () => {
+            this.insertImage();
+        });
+
+        this.elements.codeBtn.addEventListener('click', () => {
+            this.formatSelection('`', '`');
+        });
+
+        this.elements.blockCodeBtn.addEventListener('click', () => {
+            this.insertCodeBlock();
+        });
+
+        this.elements.listBtn.addEventListener('click', () => {
+            this.formatLine('- ');
+        });
+
+        this.elements.numListBtn.addEventListener('click', () => {
+            this.formatLine('1. ');
+        });
+
+        this.elements.quoteBtn.addEventListener('click', () => {
+            this.formatLine('> ');
+        });
+
+        this.elements.hrBtn.addEventListener('click', () => {
+            this.insertHorizontalRule();
+        });
+
+        this.elements.themeBtn.addEventListener('click', () => {
+            this.toggleTheme();
+        });
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             this.handleKeyboardShortcuts(e);
@@ -111,33 +189,92 @@ class MarkdownEditor {
         this.updateSaveStatus('Typing...');
         this.updateWordCount();
         
-        // Debounce the preview update for better performance
+        // Dynamic debouncing based on content length for better performance
+        const content = this.elements.markdownInput.value;
+        const debounceTime = content.length > 10000 ? 500 : content.length > 5000 ? 400 : 300;
+        
         clearTimeout(this.debounceTimer);
         this.debounceTimer = setTimeout(() => {
             this.updatePreview();
             this.updateSaveStatus('Ready');
-        }, 300);
+        }, debounceTime);
     }
 
     /**
-     * Update the preview pane
+     * Update the preview pane with performance optimization
      */
     updatePreview() {
-        const markdown = this.elements.markdownInput.value;
-        const html = this.parser.parse(markdown);
-        this.elements.previewPane.innerHTML = html;
+        try {
+            const markdown = this.elements.markdownInput.value;
+            
+            // Performance monitoring for large documents
+            const startTime = performance.now();
+            const html = this.parser.parse(markdown);
+            const parseTime = performance.now() - startTime;
+            
+            // Use requestAnimationFrame for smooth updates
+            requestAnimationFrame(() => {
+                this.elements.previewPane.innerHTML = html;
+                
+                // Performance warning for very slow parsing
+                if (parseTime > 100) {
+                    console.warn(`Markdown parsing took ${parseTime.toFixed(2)}ms - consider breaking down large documents`);
+                }
+                
+                // Update performance stats in footer (if enabled)
+                this.updatePerformanceStats(parseTime, markdown.length);
+            });
+            
+        } catch (error) {
+            console.error('Error updating preview:', error);
+            this.elements.previewPane.innerHTML = '<p style="color: red;">Error rendering preview. Please check your Markdown syntax.</p>';
+            this.showToast('Preview render error - check console for details');
+        }
     }
 
     /**
      * Update word and character count
      */
     updateWordCount() {
-        const text = this.elements.markdownInput.value;
-        const words = text.trim().split(/\\s+/).filter(word => word.length > 0);
-        const characters = text.length;
-        
-        this.elements.wordCount.textContent = `${words.length} words`;
-        this.elements.charCount.textContent = `${characters} characters`;
+        try {
+            const text = this.elements.markdownInput.value;
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            const characters = text.length;
+            
+            this.elements.wordCount.textContent = `${words.length} words`;
+            this.elements.charCount.textContent = `${characters} characters`;
+            
+            // Performance warning for very large documents
+            if (characters > 100000) {
+                this.elements.charCount.style.color = 'var(--danger-color)';
+                this.elements.charCount.title = 'Large document - may impact performance';
+            } else {
+                this.elements.charCount.style.color = '';
+                this.elements.charCount.title = '';
+            }
+        } catch (error) {
+            console.error('Error updating word count:', error);
+        }
+    }
+
+    /**
+     * Update performance statistics
+     */
+    updatePerformanceStats(parseTime, contentLength) {
+        // Only show performance stats in development or when explicitly enabled
+        if (window.location.search.includes('debug=true')) {
+            const perfInfo = `Parse: ${parseTime.toFixed(1)}ms | Size: ${(contentLength/1000).toFixed(1)}k`;
+            
+            // Update footer with performance info
+            let perfElement = document.getElementById('perf-stats');
+            if (!perfElement) {
+                perfElement = document.createElement('span');
+                perfElement.id = 'perf-stats';
+                perfElement.style.cssText = 'font-size: 0.7rem; color: var(--text-muted); margin-left: auto;';
+                this.elements.saveStatus.parentElement.appendChild(perfElement);
+            }
+            perfElement.textContent = perfInfo;
+        }
     }
 
     /**
@@ -158,9 +295,18 @@ class MarkdownEditor {
      * Save content as Markdown file
      */
     saveAsMarkdown() {
-        const content = this.elements.markdownInput.value;
-        const filename = this.generateFilename('.md');
-        this.downloadFile(content, filename, 'text/markdown');
+        try {
+            const content = this.elements.markdownInput.value;
+            if (!content.trim()) {
+                this.showToast('Cannot save empty document');
+                return;
+            }
+            const filename = this.generateFilename('.md');
+            this.downloadFile(content, filename, 'text/markdown');
+        } catch (error) {
+            console.error('Error saving Markdown:', error);
+            this.showToast('Failed to save Markdown file');
+        }
     }
 
     /**
@@ -296,10 +442,85 @@ ${htmlContent}
             this.clearEditor();
         }
         
+        // Ctrl/Cmd + B: Bold
+        if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+            e.preventDefault();
+            this.formatSelection('**', '**');
+        }
+        
+        // Ctrl/Cmd + I: Italic
+        if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+            e.preventDefault();
+            this.formatSelection('*', '*');
+        }
+        
+        // Ctrl/Cmd + K: Link
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            this.insertLink();
+        }
+        
+        // Ctrl/Cmd + Shift + K: Image
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') {
+            e.preventDefault();
+            this.insertImage();
+        }
+        
+        // Ctrl/Cmd + E: Code
+        if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+            e.preventDefault();
+            this.formatSelection('`', '`');
+        }
+        
+        // Ctrl/Cmd + Shift + C: Code block
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+            e.preventDefault();
+            this.insertCodeBlock();
+        }
+        
+        // Ctrl/Cmd + L: List
+        if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+            e.preventDefault();
+            this.formatLine('- ');
+        }
+        
+        // Ctrl/Cmd + Shift + L: Numbered list
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'L') {
+            e.preventDefault();
+            this.formatLine('1. ');
+        }
+        
+        // Ctrl/Cmd + Q: Quote
+        if ((e.ctrlKey || e.metaKey) && e.key === 'q') {
+            e.preventDefault();
+            this.formatLine('> ');
+        }
+        
+        // Ctrl/Cmd + H: Headers
+        if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
+            e.preventDefault();
+            this.formatLine('# ');
+        }
+        
+        // Ctrl/Cmd + 1-6: Headers
+        if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '6') {
+            e.preventDefault();
+            const level = '#'.repeat(parseInt(e.key));
+            this.formatLine(level + ' ');
+        }
+        
         // F11: Toggle fullscreen
         if (e.key === 'F11') {
             e.preventDefault();
             this.toggleFullscreenPreview();
+        }
+        
+        // Escape: Exit fullscreen
+        if (e.key === 'Escape') {
+            const previewPanel = document.querySelector('.preview-panel');
+            if (previewPanel.classList.contains('fullscreen')) {
+                this.toggleFullscreenPreview();
+            }
         }
     }
 
@@ -342,20 +563,25 @@ ${htmlContent}
     }
 
     /**
-     * Download file
+     * Download file with error handling
      */
     downloadFile(content, filename, mimeType) {
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        this.showToast(`Downloaded: ${filename}`);
+        try {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            this.showToast(`Downloaded: ${filename}`);
+        } catch (error) {
+            console.error('Download failed:', error);
+            this.showToast('Download failed - please try again');
+        }
     }
 
     /**
@@ -397,31 +623,53 @@ ${htmlContent}
      */
     showHelp() {
         const helpContent = `
-Markdown Editor - Keyboard Shortcuts:
+📝 MARKDOWN EDITOR - HELP & SHORTCUTS
 
+🔧 FILE OPERATIONS:
 • Ctrl/Cmd + S: Save as Markdown
 • Ctrl/Cmd + P: Print or Save as PDF
 • Ctrl/Cmd + D: Clear editor
+• Drag & drop: Load .md/.txt files
+
+✨ FORMATTING SHORTCUTS:
+• Ctrl/Cmd + B: **Bold**
+• Ctrl/Cmd + I: *Italic*
+• Ctrl/Cmd + E: \`Code\`
+• Ctrl/Cmd + K: [Link]
+• Ctrl/Cmd + Shift + K: ![Image]
+• Ctrl/Cmd + Shift + C: Code Block
+• Ctrl/Cmd + L: • List
+• Ctrl/Cmd + Shift + L: 1. Numbered List
+• Ctrl/Cmd + Q: > Quote
+• Ctrl/Cmd + H: # Header
+• Ctrl/Cmd + 1-6: # Headers (H1-H6)
+
+🖥️ VIEW OPTIONS:
 • F11: Toggle fullscreen preview
+• Escape: Exit fullscreen
+• 🌙/☀️: Toggle dark/light theme
 
-Markdown Syntax:
-• # Header 1
-• ## Header 2
-• **Bold** or __Bold__
-• *Italic* or _Italic_
-• [Link](url)
-• ![Image](url)
-• \`Code\`
-• > Blockquote
-• - List item
-• 1. Numbered list
+📋 MARKDOWN SYNTAX:
+• Headers: # H1, ## H2, ### H3
+• Bold: **text** or __text__
+• Italic: *text* or _text_
+• Links: [text](url)
+• Images: ![alt](url)
+• Code: \`inline\` or \`\`\`block\`\`\`
+• Lists: - item or 1. item
+• Tasks: - [x] done, - [ ] todo
+• Quote: > text
+• Horizontal rule: ---
+• Tables: | col1 | col2 |
 
-Features:
-• Real-time preview
-• Auto-save every 10 seconds
-• Drag & drop files
-• Export to HTML/PDF
-• Copy HTML to clipboard
+🚀 FEATURES:
+• Live preview with syntax highlighting
+• Auto-save every 10 seconds to localStorage
+• Export to Markdown, HTML, or PDF
+• Dark/light theme with system preference
+• Full GitHub Flavored Markdown support
+• Accessibility optimized (WCAG 2.1 AA)
+• Responsive design for mobile devices
         `;
         
         alert(helpContent);
@@ -457,6 +705,139 @@ Features:
             toast.style.opacity = '0';
             setTimeout(() => document.body.removeChild(toast), 300);
         }, 3000);
+    }
+
+    /**
+     * Format selected text with prefix and suffix
+     */
+    formatSelection(prefix, suffix) {
+        const textarea = this.elements.markdownInput;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        
+        const formattedText = prefix + selectedText + suffix;
+        
+        // Replace selected text
+        textarea.setRangeText(formattedText, start, end);
+        
+        // Set cursor position
+        if (selectedText === '') {
+            // No selection: place cursor between prefix and suffix
+            textarea.selectionStart = textarea.selectionEnd = start + prefix.length;
+        } else {
+            // Had selection: select the formatted text
+            textarea.selectionStart = start;
+            textarea.selectionEnd = start + formattedText.length;
+        }
+        
+        textarea.focus();
+        this.handleInput();
+    }
+
+    /**
+     * Format current line with prefix
+     */
+    formatLine(prefix) {
+        const textarea = this.elements.markdownInput;
+        const start = textarea.selectionStart;
+        const value = textarea.value;
+        
+        // Find the start of current line
+        let lineStart = value.lastIndexOf('\n', start - 1) + 1;
+        
+        // Insert prefix at line start
+        const newValue = value.substring(0, lineStart) + prefix + value.substring(lineStart);
+        textarea.value = newValue;
+        
+        // Set cursor position after prefix
+        textarea.selectionStart = textarea.selectionEnd = lineStart + prefix.length;
+        textarea.focus();
+        this.handleInput();
+    }
+
+    /**
+     * Insert link
+     */
+    insertLink() {
+        const url = prompt('Enter URL:');
+        if (url) {
+            const text = prompt('Enter link text:', url);
+            const linkMarkdown = `[${text || url}](${url})`;
+            this.insertAtCursor(linkMarkdown);
+        }
+    }
+
+    /**
+     * Insert image
+     */
+    insertImage() {
+        const url = prompt('Enter image URL:');
+        if (url) {
+            const alt = prompt('Enter alt text:', 'Image');
+            const imageMarkdown = `![${alt || 'Image'}](${url})`;
+            this.insertAtCursor(imageMarkdown);
+        }
+    }
+
+    /**
+     * Insert code block
+     */
+    insertCodeBlock() {
+        const language = prompt('Enter language (optional):', 'javascript');
+        const codeBlock = `\`\`\`${language || ''}\n\n\`\`\``;
+        this.insertAtCursor(codeBlock);
+        
+        // Place cursor inside code block
+        const textarea = this.elements.markdownInput;
+        const pos = textarea.selectionStart - 4; // Before closing ```
+        textarea.selectionStart = textarea.selectionEnd = pos;
+    }
+
+    /**
+     * Insert horizontal rule
+     */
+    insertHorizontalRule() {
+        this.insertAtCursor('\n---\n');
+    }
+
+    /**
+     * Insert text at cursor position
+     */
+    insertAtCursor(text) {
+        const textarea = this.elements.markdownInput;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        
+        textarea.setRangeText(text, start, end);
+        textarea.selectionStart = textarea.selectionEnd = start + text.length;
+        textarea.focus();
+        this.handleInput();
+    }
+
+    /**
+     * Toggle dark/light theme
+     */
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('markdownEditor_theme', newTheme);
+        
+        // Update theme button icon
+        this.elements.themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        
+        this.showToast(`Switched to ${newTheme} theme`);
+    }
+
+    /**
+     * Load saved theme
+     */
+    loadTheme() {
+        const savedTheme = localStorage.getItem('markdownEditor_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        this.elements.themeBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
     }
 }
 

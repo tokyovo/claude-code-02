@@ -15,8 +15,11 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
     <!-- Main Application Container -->
-    <div class="app-container">
+    <div class="app-container" role="application" aria-label="Markdown Editor Application">
         <!-- Header Section -->
         <header class="app-header">
             <div class="header-content">
@@ -44,7 +47,7 @@
         </header>
 
         <!-- Main Content Area -->
-        <main class="main-content">
+        <main class="main-content" id="main-content">
             <!-- Editor Panel -->
             <section class="editor-panel" aria-label="Markdown Editor">
                 <div class="panel-header">
@@ -55,6 +58,45 @@
                         <span id="charCount">0 characters</span>
                     </div>
                 </div>
+                <!-- Formatting Toolbar -->
+                <div class="formatting-toolbar">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="boldBtn" title="Bold (Ctrl+B)">
+                            <strong>B</strong>
+                        </button>
+                        <button class="toolbar-btn" id="italicBtn" title="Italic (Ctrl+I)">
+                            <em>I</em>
+                        </button>
+                        <button class="toolbar-btn" id="strikeBtn" title="Strikethrough">
+                            <span style="text-decoration: line-through">S</span>
+                        </button>
+                    </div>
+                    <div class="toolbar-separator"></div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="h1Btn" title="Header 1">H1</button>
+                        <button class="toolbar-btn" id="h2Btn" title="Header 2">H2</button>
+                        <button class="toolbar-btn" id="h3Btn" title="Header 3">H3</button>
+                    </div>
+                    <div class="toolbar-separator"></div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="linkBtn" title="Link (Ctrl+K)">🔗</button>
+                        <button class="toolbar-btn" id="imageBtn" title="Image">🖼️</button>
+                        <button class="toolbar-btn" id="codeBtn" title="Inline Code">💻</button>
+                        <button class="toolbar-btn" id="blockCodeBtn" title="Code Block">📝</button>
+                    </div>
+                    <div class="toolbar-separator"></div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="listBtn" title="Bullet List">•</button>
+                        <button class="toolbar-btn" id="numListBtn" title="Numbered List">1.</button>
+                        <button class="toolbar-btn" id="quoteBtn" title="Blockquote">❝</button>
+                        <button class="toolbar-btn" id="hrBtn" title="Horizontal Rule">―</button>
+                    </div>
+                    <div class="toolbar-separator"></div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="themeBtn" title="Toggle Dark/Light Theme">🌙</button>
+                    </div>
+                </div>
+                
                 <div class="editor-wrapper">
                     <textarea 
                         id="markdownInput" 

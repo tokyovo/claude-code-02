@@ -59,6 +59,16 @@ class MarkdownParser {
             // Blockquotes
             { pattern: /^>\s+(.+)$/gm, replacement: '<blockquote>$1</blockquote>' },
             
+            // Task lists (checkboxes)
+            {
+                pattern: /^[\*\-\+]\s+\[([ x])\]\s+(.+)$/gm,
+                replacement: (match, checked, item) => {
+                    const isChecked = checked.toLowerCase() === 'x';
+                    const checkboxHtml = `<input type="checkbox" ${isChecked ? 'checked' : ''} disabled>`;
+                    return `<ul class="task-list"><li class="task-item">${checkboxHtml} ${item}</li></ul>`;
+                }
+            },
+
             // Unordered lists
             {
                 pattern: /^[\*\-\+]\s+(.+)$/gm,
@@ -117,6 +127,9 @@ class MarkdownParser {
             inlineCode.push(match);
             return `___INLINE_CODE_${inlineCode.length - 1}___`;
         });
+        
+        // Parse tables first (before other rules)
+        html = this.parseTables(html);
         
         // Apply parsing rules
         this.rules.forEach(rule => {
@@ -180,41 +193,90 @@ class MarkdownParser {
     /**
      * Parse tables (GitHub Flavored Markdown)
      */
-    parseTable(text) {
-        const lines = text.trim().split('\n');
-        if (lines.length < 2) return text;
+    parseTables(text) {
+        // Match table patterns
+        const tablePattern = /(?:^|\n)((?:\|.*\|(?:\r?\n|\r)?)+)/gm;
         
-        const headerLine = lines[0];
-        const separatorLine = lines[1];
-        
-        // Check if it's a valid table
-        if (!separatorLine.match(/^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$/)) {
-            return text;
-        }
-        
-        const headers = headerLine.split('|').map(h => h.trim()).filter(h => h);
-        const rows = lines.slice(2).map(line => 
-            line.split('|').map(cell => cell.trim()).filter(cell => cell !== undefined)
-        );
-        
-        let tableHtml = '<table>\n<thead>\n<tr>\n';
-        headers.forEach(header => {
-            tableHtml += `<th>${header}</th>\n`;
-        });
-        tableHtml += '</tr>\n</thead>\n<tbody>\n';
-        
-        rows.forEach(row => {
-            if (row.length > 0) {
-                tableHtml += '<tr>\n';
-                row.forEach(cell => {
-                    tableHtml += `<td>${cell}</td>\n`;
-                });
-                tableHtml += '</tr>\n';
+        return text.replace(tablePattern, (match, tableText) => {
+            const lines = tableText.trim().split(/\r?\n/);
+            if (lines.length < 2) return match;
+            
+            const headerLine = lines[0];
+            const separatorLine = lines[1];
+            
+            // Check if it's a valid table
+            if (!separatorLine.match(/^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$/)) {
+                return match;
             }
+            
+            // Parse headers
+            const headers = headerLine.split('|').map(h => h.trim()).filter(h => h !== '');
+            
+            // Parse separator for alignment
+            const alignments = separatorLine.split('|')
+                .map(sep => sep.trim())
+                .filter(sep => sep !== '')
+                .map(sep => {
+                    if (sep.startsWith(':') && sep.endsWith(':')) return 'center';
+                    if (sep.endsWith(':')) return 'right';
+                    return 'left';
+                });
+            
+            // Parse rows
+            const rows = lines.slice(2).map(line => 
+                line.split('|').map(cell => cell.trim()).filter(cell => cell !== '')
+            );
+            
+            let tableHtml = '<table class="markdown-table">\n<thead>\n<tr>\n';
+            headers.forEach((header, i) => {
+                const align = alignments[i] || 'left';
+                const style = align !== 'left' ? ` style="text-align: ${align}"` : '';
+                tableHtml += `<th${style}>${this.parseInline(header)}</th>\n`;
+            });
+            tableHtml += '</tr>\n</thead>\n<tbody>\n';
+            
+            rows.forEach(row => {
+                if (row.length > 0) {
+                    tableHtml += '<tr>\n';
+                    row.forEach((cell, i) => {
+                        const align = alignments[i] || 'left';
+                        const style = align !== 'left' ? ` style="text-align: ${align}"` : '';
+                        tableHtml += `<td${style}>${this.parseInline(cell)}</td>\n`;
+                    });
+                    tableHtml += '</tr>\n';
+                }
+            });
+            
+            tableHtml += '</tbody>\n</table>';
+            return '\n' + tableHtml + '\n';
+        });
+    }
+
+    /**
+     * Parse inline elements (for use in table cells)
+     */
+    parseInline(text) {
+        if (!text) return '';
+        
+        // Apply inline formatting rules only
+        const inlineRules = [
+            { pattern: /\*\*\*(.+?)\*\*\*/g, replacement: '<strong><em>$1</em></strong>' },
+            { pattern: /___(.+?)___/g, replacement: '<strong><em>$1</em></strong>' },
+            { pattern: /\*\*(.+?)\*\*/g, replacement: '<strong>$1</strong>' },
+            { pattern: /__(.+?)__/g, replacement: '<strong>$1</strong>' },
+            { pattern: /\*(.+?)\*/g, replacement: '<em>$1</em>' },
+            { pattern: /_(.+?)_/g, replacement: '<em>$1</em>' },
+            { pattern: /~~(.+?)~~/g, replacement: '<del>$1</del>' },
+            { pattern: /`([^`]+)`/g, replacement: '<code>$1</code>' },
+            { pattern: /\[([^\]]+)\]\(([^)]+)\)/g, replacement: '<a href="$2">$1</a>' }
+        ];
+        
+        let result = text;
+        inlineRules.forEach(rule => {
+            result = result.replace(rule.pattern, rule.replacement);
         });
         
-        tableHtml += '</tbody>\n</table>';
-        return tableHtml;
+        return result;
     }
 }
 
