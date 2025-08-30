@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A powerful Markdown editor with live preview, file saving, and PDF export capabilities">
+    <meta name="keywords" content="markdown, editor, preview, html, converter">
+    <meta name="author" content="Markdown Editor">
+    <title>Markdown Editor - Live Preview</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E📝%3C/text%3E%3C/svg%3E">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">
+                    <span class="app-icon">📝</span>
+                    Markdown Editor
+                </h1>
+                
+                <!-- Action Buttons -->
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="saveMarkdownBtn" title="Save as Markdown file (Ctrl+S)">
+                        Save .md
+                    </button>
+                    <button class="btn btn-secondary" id="saveHtmlBtn" title="Save as HTML file">
+                        Save .html
+                    </button>
+                    <button class="btn btn-secondary" id="printBtn" title="Print or save as PDF (Ctrl+P)">
+                        Print/PDF
+                    </button>
+                    <button class="btn btn-ghost" id="clearBtn" title="Clear editor">
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Editor Panel -->
+            <section class="editor-panel" aria-label="Markdown Editor">
+                <div class="panel-header">
+                    <h2 class="panel-title">Markdown Input</h2>
+                    <div class="panel-info">
+                        <span id="wordCount">0 words</span>
+                        <span class="separator">•</span>
+                        <span id="charCount">0 characters</span>
+                    </div>
+                </div>
+                <div class="editor-wrapper">
+                    <textarea 
+                        id="markdownInput" 
+                        class="markdown-input"
+                        placeholder="Start typing your Markdown here...
+
+# Welcome to Markdown Editor!
+
+Type your **Markdown** on the left and see the *live preview* on the right.
+
+## Features
+- 🚀 Real-time preview
+- 💾 Save as .md or .html
+- 📄 Export to PDF
+- 🎨 Clean, modern interface
+
+### Example Code
+```javascript
+function hello() {
+    console.log('Hello, Markdown!');
+}
+```
+
+> Start writing and see the magic happen!"
+                        aria-label="Markdown input area"
+                        spellcheck="true"
+                    ></textarea>
+                </div>
+            </section>
+
+            <!-- Divider -->
+            <div class="panel-divider" role="separator" aria-orientation="vertical"></div>
+
+            <!-- Preview Panel -->
+            <section class="preview-panel" aria-label="HTML Preview">
+                <div class="panel-header">
+                    <h2 class="panel-title">Live Preview</h2>
+                    <div class="panel-actions">
+                        <button class="btn-icon" id="copyHtmlBtn" title="Copy HTML to clipboard">
+                            📋
+                        </button>
+                        <button class="btn-icon" id="fullscreenBtn" title="Fullscreen preview">
+                            🔳
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-wrapper">
+                    <div id="previewPane" class="preview-content" aria-live="polite"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <span class="footer-text">Markdown Editor v1.0</span>
+                <span class="separator">•</span>
+                <a href="#" id="helpBtn" class="footer-link">Help & Shortcuts</a>
+                <span class="separator">•</span>
+                <span id="saveStatus" class="save-status">Ready</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Hidden file input for loading files -->
+    <input type="file" id="fileInput" accept=".md,.markdown,.txt" style="display: none;">
+
+    <!-- Scripts -->
+    <script src="markdown-parser.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
