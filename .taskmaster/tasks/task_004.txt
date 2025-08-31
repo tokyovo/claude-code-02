@@ -1,0 +1,11 @@
+# Task ID: 4
+# Title: Implement live preview functionality
+# Status: pending
+# Dependencies: 2, 3
+# Priority: high
+# Description: Connect the editor to the preview pane with real-time updates as the user types
+# Details:
+Add event listeners to the textarea for input events. Implement debouncing for performance with large documents. Parse Markdown input and update the preview pane HTML. Ensure smooth updates without flickering or lag.
+
+# Test Strategy:
+Test typing performance with various document sizes, verify debouncing works correctly, test with rapid input changes

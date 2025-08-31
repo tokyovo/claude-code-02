@@ -1,0 +1,11 @@
+# Task ID: 7
+# Title: Add PDF export and print functionality
+# Status: pending
+# Dependencies: 4
+# Priority: high
+# Description: Implement print-to-PDF feature with proper formatting and print stylesheets
+# Details:
+Create print-specific CSS for proper PDF formatting. Implement window.print() functionality with preview. Add print-friendly styles that remove UI elements. Ensure proper page breaks and margins. Support for headers/footers in print view.
+
+# Test Strategy:
+Test print preview in different browsers, verify PDF output quality, test with multi-page documents

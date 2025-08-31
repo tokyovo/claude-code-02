@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Add CSS styling and theming
+# Status: pending
+# Dependencies: 2
+# Priority: medium
+# Description: Style the application with a clean, modern design and implement light/dark theme support
+# Details:
+Create professional styling for the editor and preview panes. Implement syntax highlighting colors in the preview. Add smooth transitions and hover effects. Create light and dark theme CSS variables. Style the toolbar and buttons consistently.
+
+# Test Strategy:
+Visual testing across browsers, verify theme switching works, test color contrast for accessibility

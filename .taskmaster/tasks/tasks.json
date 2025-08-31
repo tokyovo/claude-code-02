@@ -1,0 +1,167 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup project structure and base HTML",
+        "description": "Create the initial project structure with HTML5 boilerplate, CSS file, and JavaScript files",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Set up the basic project structure with index.html containing the split-pane layout, styles.css for styling, markdown-parser.js for the parser logic, and app.js for application logic. Include proper meta tags, responsive viewport settings, and semantic HTML structure.",
+        "testStrategy": "Manual testing: Verify HTML loads correctly, CSS and JS files are linked properly, and the basic layout renders in different browsers",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement split-pane layout with editor and preview",
+        "description": "Create a responsive two-column layout with editor textarea on the left and preview pane on the right",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          "1"
+        ],
+        "details": "Implement a 50/50 split layout using CSS Grid or Flexbox. Add a textarea element for Markdown input and a div for HTML preview output. Ensure the layout is responsive and works on different screen sizes. Add proper containers and semantic HTML elements.",
+        "testStrategy": "Test responsive behavior at different breakpoints, verify textarea is functional, ensure preview pane displays content correctly",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Create custom Markdown parser with regex",
+        "description": "Implement a JavaScript Markdown parser using regular expressions to convert Markdown syntax to HTML",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          "1"
+        ],
+        "details": "Build a modular parser that handles headers (H1-H6), bold/italic/strikethrough text, lists (ordered/unordered), links, images, code blocks, inline code, blockquotes, horizontal rules, and paragraphs. Use regex patterns for each Markdown element and ensure proper HTML escaping for security.",
+        "testStrategy": "Unit tests for each parser function, test with various Markdown samples, verify XSS protection, test edge cases and malformed input",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement live preview functionality",
+        "description": "Connect the editor to the preview pane with real-time updates as the user types",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          "2",
+          "3"
+        ],
+        "details": "Add event listeners to the textarea for input events. Implement debouncing for performance with large documents. Parse Markdown input and update the preview pane HTML. Ensure smooth updates without flickering or lag.",
+        "testStrategy": "Test typing performance with various document sizes, verify debouncing works correctly, test with rapid input changes",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Add CSS styling and theming",
+        "description": "Style the application with a clean, modern design and implement light/dark theme support",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          "2"
+        ],
+        "details": "Create professional styling for the editor and preview panes. Implement syntax highlighting colors in the preview. Add smooth transitions and hover effects. Create light and dark theme CSS variables. Style the toolbar and buttons consistently.",
+        "testStrategy": "Visual testing across browsers, verify theme switching works, test color contrast for accessibility",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement file save functionality",
+        "description": "Add ability to save the Markdown content as .md or .html files to the user's computer",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          "4"
+        ],
+        "details": "Implement save as Markdown (.md) using the File API and Blob. Add save as HTML option that includes proper document structure and styling. Create download functionality with appropriate file naming. Add keyboard shortcuts (Ctrl/Cmd+S) for quick save.",
+        "testStrategy": "Test file downloads in different browsers, verify file contents are correct, test with various file sizes",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Add PDF export and print functionality",
+        "description": "Implement print-to-PDF feature with proper formatting and print stylesheets",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          "4"
+        ],
+        "details": "Create print-specific CSS for proper PDF formatting. Implement window.print() functionality with preview. Add print-friendly styles that remove UI elements. Ensure proper page breaks and margins. Support for headers/footers in print view.",
+        "testStrategy": "Test print preview in different browsers, verify PDF output quality, test with multi-page documents",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement local storage auto-save",
+        "description": "Add automatic draft saving to browser local storage to prevent data loss",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          "4"
+        ],
+        "details": "Save drafts to localStorage automatically every few seconds. Implement recovery on page reload. Add visual indicator for save status. Handle storage quota exceeded errors. Add option to clear saved drafts.",
+        "testStrategy": "Test auto-save intervals, verify recovery after browser refresh, test storage limits",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Add toolbar with formatting buttons",
+        "description": "Create a toolbar with buttons for common Markdown formatting actions",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          "4"
+        ],
+        "details": "Add buttons for bold, italic, headers, lists, links, images, code blocks. Implement text selection and insertion at cursor position. Add tooltips for each button. Include keyboard shortcut hints. Support undo/redo functionality.",
+        "testStrategy": "Test each formatting button, verify cursor position handling, test with text selection",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement advanced Markdown features",
+        "description": "Add support for tables, task lists, and other GitHub Flavored Markdown extensions",
+        "status": "done",
+        "priority": "low",
+        "dependencies": [
+          "3"
+        ],
+        "details": "Implement table parsing with proper alignment support. Add task list checkboxes (- [ ] and - [x]). Support footnotes and definition lists. Add strikethrough text support. Implement nested blockquotes and lists.",
+        "testStrategy": "Test complex Markdown documents, verify GFM compatibility, test nested structures",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Add keyboard shortcuts and accessibility",
+        "description": "Implement comprehensive keyboard shortcuts and ensure WCAG 2.1 AA compliance",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          "9"
+        ],
+        "details": "Add keyboard shortcuts for all major functions. Implement proper ARIA labels and roles. Ensure keyboard navigation works throughout the app. Add skip links and focus management. Support screen readers properly.",
+        "testStrategy": "Test with keyboard-only navigation, use screen reader testing tools, verify WCAG compliance",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Performance optimization and testing",
+        "description": "Optimize rendering performance and conduct comprehensive testing",
+        "status": "done",
+        "priority": "low",
+        "dependencies": [
+          "4",
+          "10"
+        ],
+        "details": "Optimize parser performance for large documents. Implement virtual scrolling if needed. Add performance monitoring. Minimize reflows and repaints. Optimize regex patterns. Add comprehensive error handling.",
+        "testStrategy": "Performance testing with large documents (100k+ characters), browser profiling, load time testing",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-30T19:58:14.795Z",
+      "updated": "2025-08-30T20:34:16.772Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Setup project structure and base HTML
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Create the initial project structure with HTML5 boilerplate, CSS file, and JavaScript files
+# Details:
+Set up the basic project structure with index.html containing the split-pane layout, styles.css for styling, markdown-parser.js for the parser logic, and app.js for application logic. Include proper meta tags, responsive viewport settings, and semantic HTML structure.
+
+# Test Strategy:
+Manual testing: Verify HTML loads correctly, CSS and JS files are linked properly, and the basic layout renders in different browsers

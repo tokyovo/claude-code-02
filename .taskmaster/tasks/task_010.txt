@@ -1,0 +1,11 @@
+# Task ID: 10
+# Title: Implement advanced Markdown features
+# Status: pending
+# Dependencies: 3
+# Priority: low
+# Description: Add support for tables, task lists, and other GitHub Flavored Markdown extensions
+# Details:
+Implement table parsing with proper alignment support. Add task list checkboxes (- [ ] and - [x]). Support footnotes and definition lists. Add strikethrough text support. Implement nested blockquotes and lists.
+
+# Test Strategy:
+Test complex Markdown documents, verify GFM compatibility, test nested structures

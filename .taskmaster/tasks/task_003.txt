@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Create custom Markdown parser with regex
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Implement a JavaScript Markdown parser using regular expressions to convert Markdown syntax to HTML
+# Details:
+Build a modular parser that handles headers (H1-H6), bold/italic/strikethrough text, lists (ordered/unordered), links, images, code blocks, inline code, blockquotes, horizontal rules, and paragraphs. Use regex patterns for each Markdown element and ensure proper HTML escaping for security.
+
+# Test Strategy:
+Unit tests for each parser function, test with various Markdown samples, verify XSS protection, test edge cases and malformed input

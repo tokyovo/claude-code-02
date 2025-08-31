@@ -1,0 +1,11 @@
+# Task ID: 9
+# Title: Add toolbar with formatting buttons
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: Create a toolbar with buttons for common Markdown formatting actions
+# Details:
+Add buttons for bold, italic, headers, lists, links, images, code blocks. Implement text selection and insertion at cursor position. Add tooltips for each button. Include keyboard shortcut hints. Support undo/redo functionality.
+
+# Test Strategy:
+Test each formatting button, verify cursor position handling, test with text selection

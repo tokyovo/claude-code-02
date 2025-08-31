@@ -1,0 +1,11 @@
+# Task ID: 11
+# Title: Add keyboard shortcuts and accessibility
+# Status: pending
+# Dependencies: 9
+# Priority: medium
+# Description: Implement comprehensive keyboard shortcuts and ensure WCAG 2.1 AA compliance
+# Details:
+Add keyboard shortcuts for all major functions. Implement proper ARIA labels and roles. Ensure keyboard navigation works throughout the app. Add skip links and focus management. Support screen readers properly.
+
+# Test Strategy:
+Test with keyboard-only navigation, use screen reader testing tools, verify WCAG compliance

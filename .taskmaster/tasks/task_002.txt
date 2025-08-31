@@ -1,0 +1,11 @@
+# Task ID: 2
+# Title: Implement split-pane layout with editor and preview
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create a responsive two-column layout with editor textarea on the left and preview pane on the right
+# Details:
+Implement a 50/50 split layout using CSS Grid or Flexbox. Add a textarea element for Markdown input and a div for HTML preview output. Ensure the layout is responsive and works on different screen sizes. Add proper containers and semantic HTML elements.
+
+# Test Strategy:
+Test responsive behavior at different breakpoints, verify textarea is functional, ensure preview pane displays content correctly
